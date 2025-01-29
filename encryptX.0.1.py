@@ -25,6 +25,7 @@ print("""
       Tools by ipzonex
       Instagram : @ipzonex
       Github    : ipzoone
+      Linkedin  : Saif Ali Mushaddiq
       """)
      
 
