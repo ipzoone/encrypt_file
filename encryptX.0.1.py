@@ -5,6 +5,8 @@ from cryptography.fernet import Fernet
 import sys
 import base64
 
+#MAINTANCE belum sempurna
+
 banner = """
 
 
