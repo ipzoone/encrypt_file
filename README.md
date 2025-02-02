@@ -23,8 +23,7 @@ pip install cryptography
 Lalu, unduh atau clone repositori ini:
 
 ```sh
-git clone https://github.com/ipzoone/ipzone-encryptor.git
-cd ipzone-encryptor
+https://github.com/ipzoone/encrypt_file.git
 ```
 
 ---
@@ -33,7 +32,7 @@ cd ipzone-encryptor
 
 ### 1. Jalankan Program
 ```sh
-python encryptor.py
+python encryptX.0.1.py
 ```
 
 ### 2. Menu Utama
