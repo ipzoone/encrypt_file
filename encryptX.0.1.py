@@ -1,218 +1,174 @@
 import os
 import shutil
+import sys
 from tkinter import Tk, filedialog
 from cryptography.fernet import Fernet
-import sys
-import base64
 
-#MAINTANCE belum sempurna
+# ================ KONFIGURASI ================
+VERSION = "3.1"
+FILE_EXTENSION = ".ipzone"
+ENCRYPTED_FOLDER_SUFFIX = " by ipzoneX"
+KEY_FILE = "filekey.key"
 
-banner = """
+# ================ UTILITIES ================
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
+def show_banner():
+    banner = f"""
+    ===========================================
+    IPZone Encryptor (Secure Version)
+    Version: {VERSION}
+    ===========================================
+    Tools by ipzonex
+    Instagram: @ipzonex
+    Github: ipzoone
+    Linkedin: Saif Ali Mushaddiq
+    ===========================================
+    """
+    print("\033[31m" + banner + "\033[0m")
 
-                                                             $$\     $$$$$$$$\  $$$$$$\  $$\   $$\ $$$$$$$$\ $$\   $$\ 
-                                                             $$ |    \____$$  |$$  __$$\ $$$\  $$ |$$  _____|$$ |  $$ |
- $$$$$$\  $$$$$$$\   $$$$$$$\  $$$$$$\  $$\   $$\  $$$$$$\ $$$$$$\       $$  / $$ /  $$ |$$$$\ $$ |$$ |      \$$\ $$  |
-$$  __$$\ $$  __$$\ $$  _____|$$  __$$\ $$ |  $$ |$$  __$$\\_$$  _|     $$  /  $$ |  $$ |$$ $$\$$ |$$$$$\     \$$$$  / 
-$$$$$$$$ |$$ |  $$ |$$ /      $$ |  \__|$$ |  $$ |$$ /  $$ | $$ |      $$  /   $$ |  $$ |$$ \$$$$ |$$  __|    $$  $$<  
-$$   ____|$$ |  $$ |$$ |      $$ |      $$ |  $$ |$$ |  $$ | $$ |$$\  $$  /    $$ |  $$ |$$ |\$$$ |$$ |      $$  /\$$\ 
-\$$$$$$$\ $$ |  $$ |\$$$$$$$\ $$ |      \$$$$$$$ |$$$$$$$  | \$$$$  |$$$$$$$$\  $$$$$$  |$$ | \$$ |$$$$$$$$\ $$ /  $$ |
- \_______|\__|  \__| \_______|\__|       \____$$ |$$  ____/   \____/ \________| \______/ \__|  \__|\________|\__|  \__|
-                                        $$\   $$ |$$ |                                                                 
-                                        \$$$$$$  |$$ |                                                                 
-                                         \______/ \__|                                                                                                                                                                                                    
-"""
-print("\033[31m" + banner + "\033[0m")
-print("""
-      Tools by ipzonex
-      Instagram : @ipzonex
-      Github    : ipzoone
-      Linkedin  : Saif Ali Mushaddiq
-      """)
-     
-
-# Fungsi untuk membuat kunci dan menyimpannya ke file
-def generate_key(key_file="filekey.key"):
+# ================ KEY MANAGEMENT ================
+def generate_key():
+    """Membuat kunci baru dan menyimpan ke file"""
     key = Fernet.generate_key()
-    with open(key_file, "wb") as file:
-        file.write(key)
-    print(f"Kunci berhasil disimpan di '{key_file}'")
+    with open(KEY_FILE, "wb") as f:
+        f.write(key)
+    print("\nKunci berhasil dibuat!")
+    print("====================================")
+    print(f"Kunci Anda: {key.decode()}")
+    print("====================================")
+    print("Simpan kunci ini di tempat AMAN!")
 
-# Fungsi untuk memuat kunci dari file
-def load_key(key_file="filekey.key"):
-    if not os.path.exists(key_file):
-        print(f"File kunci '{key_file}' tidak ditemukan. Silakan buat kunci terlebih dahulu.")
+def load_key():
+    """Memuat kunci dari file"""
+    if not os.path.exists(KEY_FILE):
+        print("Error: File kunci tidak ditemukan!")
         return None
-    with open(key_file, "rb") as file:
-        return file.read()
+    
+    with open(KEY_FILE, "rb") as f:
+        return f.read()
 
-# Fungsi untuk mengenkripsi isi file
-def encrypt_file(file_path, key, output_path):
-    cipher_suite = Fernet(key)
-    with open(file_path, "rb") as file:
-        file_data = file.read()
-    encrypted_data = cipher_suite.encrypt(file_data)
-
-    # Simpan file terenkripsi
-    with open(output_path, "wb") as file:
-        file.write(encrypted_data)
-    print(f"File '{file_path}' berhasil dienkripsi menjadi '{output_path}'.")
-
-# Fungsi untuk mendekripsi isi file
-def decrypt_file(file_path, key, output_path):
-    cipher_suite = Fernet(key)
+# ================ ENCRYPTION ================
+def encrypt_folder(folder_path: str):
+    """Mengenkripsi folder dengan kunci dari file"""
     try:
-        with open(file_path, "rb") as file:
-            encrypted_data = file.read()
-        decrypted_data = cipher_suite.decrypt(encrypted_data)
+        key = load_key()
+        if not key:
+            return False
 
-        # Simpan file hasil dekripsi
-        with open(output_path, "wb") as file:
-            file.write(decrypted_data)
-        print(f"File '{file_path}' berhasil didekripsi menjadi '{output_path}'.")
+        cipher = Fernet(key)
+        encrypted_folder = folder_path + ENCRYPTED_FOLDER_SUFFIX
+        
+        # Enkripsi semua file
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                src_path = os.path.join(root, file)
+                relative_path = os.path.relpath(src_path, folder_path)
+                dest_path = os.path.join(encrypted_folder, relative_path + FILE_EXTENSION)
+                
+                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                
+                with open(src_path, "rb") as f:
+                    data = f.read()
+                
+                with open(dest_path, "wb") as f:
+                    f.write(cipher.encrypt(data))
+        
+        shutil.rmtree(folder_path)
+        print(f"\nEnkripsi berhasil! Folder asli dihapus.")
+        print(f"Folder terenkripsi: {encrypted_folder}")
+    
     except Exception as e:
-        print(f"Error: Gagal mendekripsi file '{file_path}'. Kunci salah atau file rusak. {e}")
+        print(f"\nError: {str(e)}")
 
-# Fungsi untuk mengenkripsi folder
-def encrypt_folder(folder_path, key):
-    print(f"Mengenkripsi folder: {folder_path}...")
-    encrypted_folder = folder_path + " by ipzoneX"
-    os.makedirs(encrypted_folder, exist_ok=True)
+# ================ DECRYPTION ================
+def decrypt_folder(folder_path: str):
+    """Mendekripsi folder dengan kunci manual"""
+    try:
+        # Minta kunci dari pengguna
+        key_input = input("Masukkan kunci untuk dekripsi: ").strip().encode()
+        
+        # Baca kunci dari file
+        stored_key = load_key()
+        if not stored_key:
+            return False
+        
+        # Validasi kunci
+        if key_input != stored_key:
+            print("\nError: Kunci yang dimasukkan tidak sesuai!")
+            return False
 
-    # Salin dan enkripsi setiap file di dalam folder
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            original_file_path = os.path.join(root, file)
-            relative_path = os.path.relpath(original_file_path, folder_path)
-            encrypted_file_path = os.path.join(encrypted_folder, relative_path + ".ipzone")
+        cipher = Fernet(stored_key)
+        decrypted_folder = folder_path.replace(ENCRYPTED_FOLDER_SUFFIX, "")
+        
+        # Dekripsi semua file
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                if not file.endswith(FILE_EXTENSION):
+                    continue
+                
+                src_path = os.path.join(root, file)
+                relative_path = os.path.relpath(src_path, folder_path)
+                dest_path = os.path.join(decrypted_folder, relative_path.replace(FILE_EXTENSION, ""))
+                
+                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                
+                with open(src_path, "rb") as f:
+                    data = f.read()
+                
+                with open(dest_path, "wb") as f:
+                    f.write(cipher.decrypt(data))
+        
+        shutil.rmtree(folder_path)
+        print(f"\nDekripsi berhasil! Folder terenkripsi dihapus.")
+        print(f"Folder asli: {decrypted_folder}")
+    
+    except Exception as e:
+        print(f"\nError: {str(e)}")
 
-            # Buat subfolder jika diperlukan
-            os.makedirs(os.path.dirname(encrypted_file_path), exist_ok=True)
-            encrypt_file(original_file_path, key, encrypted_file_path)
-
-    # Buat file decrypt.exe untuk dekripsi
-    create_decrypt_exe(encrypted_folder, key)
-
-    # Hapus folder asli setelah enkripsi selesai
-    shutil.rmtree(folder_path)
-    print(f"Folder asli '{folder_path}' berhasil dienkripsi dan dihapus.")
-
-# Fungsi untuk mendekripsi folder
-def decrypt_folder(folder_path, key):
-    print(f"Mendekripsi folder: {folder_path}...")
-    decrypted_folder = folder_path.replace(" by ipzoneX", "")
-    os.makedirs(decrypted_folder, exist_ok=True)
-
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            if file.endswith(".ipzone"):
-                encrypted_file_path = os.path.join(root, file)
-                relative_path = os.path.relpath(encrypted_file_path, folder_path)
-                original_file_path = os.path.join(decrypted_folder, relative_path.replace(".ipzone", ""))
-
-                # Buat subfolder jika diperlukan
-                os.makedirs(os.path.dirname(original_file_path), exist_ok=True)
-                print(f"Decrypting: {encrypted_file_path} -> {original_file_path}")
-                decrypt_file(encrypted_file_path, key, original_file_path)
-
-    print(f"Folder berhasil didekripsi ke '{decrypted_folder}'.")
-
-# Fungsi untuk membuka dialog File Explorer di depan terminal
+# ================ USER INTERFACE ================
 def select_folder():
     root = Tk()
-    root.withdraw()  # Menyembunyikan jendela utama Tkinter
-    root.attributes("-topmost", True)  # Membuat File Explorer muncul di depan terminal
-    folder_path = filedialog.askdirectory()
-    root.attributes("-topmost", False)  # Kembalikan normal setelah File Explorer selesai
-    if not folder_path:
-        print("Tidak ada folder yang dipilih.")
-    return folder_path
+    root.withdraw()
+    folder = filedialog.askdirectory()
+    root.destroy()
+    return folder
 
-# Fungsi untuk membuat file decrypt.exe
-def create_decrypt_exe(folder, key):
-    decrypt_code = f"""
-import os
-from cryptography.fernet import Fernet
-
-def decrypt_file(file_path, key, output_path):
-    cipher_suite = Fernet(key)
-    try:
-        with open(file_path, "rb") as file:
-            encrypted_data = file.read()
-        decrypted_data = cipher_suite.decrypt(encrypted_data)
-
-        # Simpan file hasil dekripsi
-        with open(output_path, "wb") as file:
-            file.write(decrypted_data)
-        print(f"File '{{file_path}}' berhasil didekripsi menjadi '{{output_path}}'.")
-    except Exception as e:
-        print(f"Error: Gagal mendekripsi file '{{file_path}}'. Kunci salah atau file rusak. {{e}}")
-
-def decrypt_folder(folder_path, key):
-    print(f"Mendekripsi folder: {{folder_path}}...")
-    decrypted_folder = folder_path.replace(" by ipzoneX", "")
-    os.makedirs(decrypted_folder, exist_ok=True)
-
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            if file.endswith(".ipzone"):
-                encrypted_file_path = os.path.join(root, file)
-                relative_path = os.path.relpath(encrypted_file_path, folder_path)
-                original_file_path = os.path.join(decrypted_folder, relative_path.replace(".ipzone", ""))
-
-                # Buat subfolder jika diperlukan
-                os.makedirs(os.path.dirname(original_file_path), exist_ok=True)
-                print(f"Decrypting: {{encrypted_file_path}} -> {{original_file_path}}")
-                decrypt_file(encrypted_file_path, key, original_file_path)
-
-    print(f"Folder berhasil didekripsi ke '{{decrypted_folder}}'.")
-
-if __name__ == "__main__":
-    # Masukkan kunci untuk dekripsi
-    key_input = input("Masukkan kunci untuk mendekripsi: ").strip().encode()
-    folder_path = input("Masukkan path folder yang ingin didekripsi: ").strip()
-    decrypt_folder(folder_path, key_input)
-"""
-    exe_path = os.path.join(folder, "decrypt.exe")
-    with open(exe_path, "w") as exe_file:
-        exe_file.write(decrypt_code)
-    print(f"File 'decrypt.exe' berhasil dibuat di folder: {folder}")
-
-# Menu utama dengan loop
-def main():
+def main_menu():
+    clear_screen()
+    show_banner()
+    
     while True:
-        print("\n===================================")
-        print("1. Buat kunci baru")
-        print("2. Enkripsi folder")
-        print("3. Dekripsi folder")
-        print("4. Keluar")
-        print("===================================")
+        print("\n=== MAIN MENU ===")
+        print("1. Generate Key Baru")
+        print("2. Enkripsi Folder")
+        print("3. Dekripsi Folder")
+        print("4. Exit")
         
-        choice = input("Pilih opsi (1/2/3/4): ").strip()
+        choice = input("Pilih opsi (1-4): ").strip()
 
         if choice == "1":
             generate_key()
         elif choice == "2":
-            key = load_key()
-            if not key:
-                continue
-            folder_path = select_folder()
-            if not folder_path:
-                print("Proses dibatalkan.")
-                continue
-            encrypt_folder(folder_path, key)
+            if (folder := select_folder()) and os.path.exists(folder):
+                encrypt_folder(folder)
         elif choice == "3":
-            key = input("Masukkan kunci: ").strip().encode()
-            folder_path = select_folder()
-            if not folder_path:
-                print("Proses dibatalkan.")
-                continue
-            decrypt_folder(folder_path, key)
+            if (folder := select_folder()) and os.path.exists(folder):
+                decrypt_folder(folder)
         elif choice == "4":
-            print("Keluar dari program. Sampai jumpa!")
-            break
+            print("\nTerima kasih telah menggunakan IPZone Encryptor!")
+            sys.exit(0)
         else:
-            print("Pilihan tidak valid. Silakan coba lagi.")
+            print("Input tidak valid!")
+        
+        input("\nTekan Enter untuk melanjutkan...")
+        clear_screen()
 
+# ================ MAIN ================
 if __name__ == "__main__":
-    main()
+    try:
+        main_menu()
+    except KeyboardInterrupt:
+        print("\n\nOperasi dibatalkan oleh pengguna!")
+        sys.exit(1)
