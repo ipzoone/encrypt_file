@@ -15,18 +15,32 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def show_banner():
+    VERSION = "1.0"  
+    BLUE = '\033[0;34m'
+    RED = '\033[31m'
+    RESET = '\033[0m'
+
     banner = f"""
-    ===========================================
-    IPZone Encryptor (Secure Version)
+    {RED}============================={BLUE}
+  _                               
+ (_)                              
+  _ _ __ _______  _ __   _____  __
+ | | '_ \_  / _ \| '_ \ / _ \ \/ /
+ | | |_) / / (_) | | | |  __/>  < 
+ |_| .__/___\___/|_| |_|\___/_/\_\\
+   | |                            
+   |_|                            
+   {RESET}{RED}
+    IPZone Encryptor
     Version: {VERSION}
-    ===========================================
-    Tools by ipzonex
-    Instagram: @ipzonex
-    Github: ipzoone
-    Linkedin: Saif Ali Mushaddiq
-    ===========================================
+    ==============================
+    Tools by {BLUE}ipzonex{RESET}{RED}
+    Instagram:{BLUE}@ipzonex{RESET}{RED}
+    Github: {BLUE}ipzoone{RESET}{RED}
+    Linkedin: {BLUE}Saif Ali Mushaddiq{RESET}{RED}
+    ==============================={RESET}
     """
-    print("\033[31m" + banner + "\033[0m")
+    print(banner)
 
 # ================ KEY MANAGEMENT ================
 def generate_key():
@@ -157,7 +171,10 @@ def main_menu():
             if (folder := select_folder()) and os.path.exists(folder):
                 decrypt_folder(folder)
         elif choice == "4":
-            print("\nTerima kasih telah menggunakan IPZone Encryptor!")
+            print('''
+            \nTerima kasih telah menggunakan IPZone Encryptor!
+            ./IPZONEX
+            ''')
             sys.exit(0)
         else:
             print("Input tidak valid!")
