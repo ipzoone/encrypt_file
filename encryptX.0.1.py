@@ -35,10 +35,10 @@ def show_banner():
     Version: {VERSION}
     ==============================
     Tools by {BLUE}ipzonex{RESET}{RED}
-    Instagram: @ipzonex
-    Github: ipzoone
-    Linkedin: Saif Ali Mushaddiq
-    ==========================================={RESET}
+    Instagram:{BLUE}@ipzonex{RESET}{RED}
+    Github: {BLUE}ipzoone{RESET}{RED}
+    Linkedin: {BLUE}Saif Ali Mushaddiq{RESET}{RED}
+    ================================={RESET}
     """
     print(banner)
 
@@ -171,7 +171,10 @@ def main_menu():
             if (folder := select_folder()) and os.path.exists(folder):
                 decrypt_folder(folder)
         elif choice == "4":
-            print("\nTerima kasih telah menggunakan IPZone Encryptor!")
+            print('''
+                  \nTerima kasih telah menggunakan IPZone Encryptor!
+                  ./IPZONEX
+                  ''')
             sys.exit(0)
         else:
             print("Input tidak valid!")
