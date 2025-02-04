@@ -80,5 +80,5 @@ IPZone Encryptor dibuat untuk penggunaan pribadi dan edukasi. Penggunaan alat in
 - **GitHub**: [ipzoone](https://github.com/ipzoone)
 - **LinkedIn**: [Saif Ali Mushaddiq](https://linkedin.com/in/saif-ali-mushaddiq)
 
-**./IPZONEX** Terima kasih telah menggunakan IPZone Encryptor! 😊
+**./IPZONEX** Terima kasih telah menggunakan IPZone Encryptor gunakan secara legal ya, etika di atas segala nya! 😊
 
