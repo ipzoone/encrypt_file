@@ -7,7 +7,7 @@ from cryptography.fernet import Fernet
 # ================ KONFIGURASI ================
 VERSION = "3.1"
 FILE_EXTENSION = ".ipzone"
-ENCRYPTED_FOLDER_SUFFIX = " by ipzoneX"
+ENCRYPTED_FOLDER_SUFFIX = " by ipzonex"
 KEY_FILE = "filekey.key"
 
 # ================ UTILITIES ================
