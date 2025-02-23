@@ -28,7 +28,7 @@ https://github.com/ipzoone/encrypt_file.git
 
 ---
 
-## 🔧 Cara Penggunaan
+## 🔧 Cara Penggunaan nya
 
 ### 1. Jalankan Program
 ```sh
