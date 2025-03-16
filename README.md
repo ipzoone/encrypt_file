@@ -1,6 +1,6 @@
 #**IPZONEX** Encryptor
 
-IPZone Encryptor adalah alat enkripsi folder berbasis Python yang menggunakan algoritma **Fernet (AES-128)** dari pustaka **cryptography** untuk mengamankan file Anda. Alat ini memungkinkan Anda untuk mengenkripsi dan mendekripsi folder dengan mudah serta menyimpan kunci enkripsi untuk keamanan data, pastikan menggunakannya dengan legal.
+IPZONEX Encryptor adalah alat enkripsi folder berbasis Python yang menggunakan algoritma **Fernet (AES-128)** dari pustaka **cryptography** untuk mengamankan file Anda. Alat ini memungkinkan Anda untuk mengenkripsi dan mendekripsi folder dengan mudah serta menyimpan kunci enkripsi untuk keamanan data, pastikan menggunakannya dengan legal.
 
 ---
 
